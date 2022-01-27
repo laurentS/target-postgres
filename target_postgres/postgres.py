@@ -230,7 +230,7 @@ class PostgresTarget(SQLInterface):
             table_path = None
             if raw_json:
                 table_path = json.loads(raw_json).get('path', None)
-            self.LOGGER.info("Mapping: {} to {}".format(mapped_name, table_path))
+            # self.LOGGER.info("Mapping: {} to {}".format(mapped_name, table_path))
             if table_path:
                 self.table_mapping_cache[tuple(table_path)] = mapped_name
 
