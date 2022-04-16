@@ -152,7 +152,8 @@ def _line_handler(state_tracker, target, invalid_records_detect, invalid_records
         state_tracker.flush_stream(line_data['stream'])
         target.activate_version(stream_buffer, line_data['version'])
     elif line_data['type'] == 'STATE':
-        state_tracker.handle_state_message(line_data)
+        # pass the string instead of the deserialized object to save memory in the deque
+        state_tracker.handle_state_message(line)
     else:
         raise TargetError('Unknown message type {} in message {}'.format(
             line_data['type'],
@@ -188,3 +189,10 @@ def _run_sql_hook(hook_name, config, target):
         with target.conn.cursor() as cur:
             cur.execute(config[hook_name])
             LOGGER.debug('{} SQL executed'.format(hook_name))
+
+    hook_file = hook_name + '_file'
+    if hook_file in config:
+        with open(config[hook_file]) as f:
+            with target.conn.cursor() as cur:
+                cur.execute(f.read())
+                LOGGER.debug('{} SQL file executed'.format(hook_file))
